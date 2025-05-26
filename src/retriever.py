@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import numpy as np
+import os
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -79,8 +80,31 @@ class SemanticRetriever:
         self.vocab_list = sorted(list(vocabulary_set))
         print(f"Pra-pemrosesan selesai. Ukuran kosakata: {len(self.vocab_list)} kata unik.")
 
+    def _save_embeddings(self, embeddings: np.ndarray, file_name: str):
+        """Menyimpan embedding ke file."""
+        model_dir = "model"
+        os.makedirs(model_dir, exist_ok=True)
+        file_path = os.path.join(model_dir, file_name)
+        np.save(file_path, embeddings)
+        print(f"Embedding disimpan ke: {file_path}")
+
+    def _load_embeddings(self, file_name: str) -> np.ndarray:
+        """Memuat embedding dari file."""
+        model_dir = "model"
+        file_path = os.path.join(model_dir, file_name)
+        if os.path.exists(file_path):
+            print(f"Memuat embedding dari file: {file_path}")
+            return np.load(file_path)
+        return np.array([])
+
     def _generate_corpus_embeddings(self):
-        """Membuat embedding untuk seluruh kosakata."""
+        """Membuat atau memuat embedding untuk seluruh kosakata."""
+        embeddings_file = f"{self.model_name}_embeddings.npy"
+        
+        self.corpus_embeddings = self._load_embeddings(embeddings_file)
+        if self.corpus_embeddings.size > 0:
+            return
+
         if not self.vocab_list or not self.model:
             print("Kosakata atau model tidak tersedia, embedding tidak dibuat.")
             return
@@ -88,6 +112,7 @@ class SemanticRetriever:
         print("Membuat embedding untuk kosakata...")
         try:
             self.corpus_embeddings = self.model.encode(self.vocab_list, show_progress_bar=True)
+            self._save_embeddings(self.corpus_embeddings, embeddings_file)
             print("Pembuatan embedding korpus selesai.")
         except Exception as e:
             print(f"Error saat membuat embedding korpus: {e}")
