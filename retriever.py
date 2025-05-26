@@ -46,25 +46,25 @@ class SemanticRetriever:
             return None
 
     def _load_data(self, csv_file_path):
-        """Memuat data dari file CSV atau menggunakan data contoh internal."""
-        if csv_file_path:
-            try:
-                print(f"Mencoba memuat data dari: {csv_file_path}")
-                df = pd.read_csv(csv_file_path)
-                print("Data berhasil dimuat dari file.")
-                return df
-            except FileNotFoundError:
-                print(f"File '{csv_file_path}' tidak ditemukan.")
-            except Exception as e:
-                print(f"Error saat memuat file CSV '{csv_file_path}': {e}")
-        
-        print("Menggunakan data contoh internal karena file tidak disediakan atau gagal dimuat.")
-        csv_data_internal = """indonesian,minangkabau
-"saat ini, makam syekh sihalahan telah diberi cungkup dan dibuatkan bangunan yang disusun dengan bata berplester dengan ukuran 4 x 3 meter","kiniko, makam syekh sihalahan alah diagia cungkup dan dibuekan bangunan nan disusun jo bata berplester dengan ukuran 4 x 3 meter"
-"majelis islam tinggi adalah badan tertinggi yang bertanggung jawab untuk urusan komunitas muslim di wilayah sumatera barat, badan ini awalnya dibentuk dengan tujuan 1sebagai suatu badan penasehat yang terdiri dari umat muslim.majelis islam tinggi atau biasa disingkat dengan sebutan mit didirikan dengan tujuan untuk menghimpun perjuangan umat islam yang ada diminangkabau.majelis islam tinggi ini didirikan oleh seorang syeikh yang bernama syeikh muhammad jamil jambek q.v.beliau banyak mengadakan kegiatan pembaharuan dan pemurnian mengenai islam melalui ceramahceramah dan dakwah secara lisan serta menulis bukubuku yang menolak amalan tarekat secara berlebihan.anggota dari majelis islam tinggi ini sudah banyak tergabung dalam majelis iskam tinggi,diantaranya tokoh ulama besar yakni haji abdul karim amrullah juga dikenali sebagai haji rasul atau inyiak doto, 18791945 merupakan antara tokoh lain yang mengasaskan sekolah islam moden yang pertama sumatera thawalib 1919 yakni yang berada di padang panjang bersamasama dengan tokoh haji abdullah ahmad 18781933.","majelis islam tinggi adolah badan tinggi nan bertanggung jawab panuah untuak urusan komunitas muslim di sumatera barat, badan iko awalnya dibantuak 1sabagai suatu badan nan manasehati nan tadiri dari umek muslim.majelis islam tinggi atau biaso awak singkat namonyo jo sabutan mit dibantuak untuak mangumpuan pajuangan umat islam nan ado di diminangkabau.majelis islam tinggi iko didirian dek salah satu syeikh nan tanamo banamo syeikh muhammad jamil jambek q.v.baliau banyak meadokan acara baru dan itu murni untuak islam melalui ceramahceramah dan dakwah yang dilakukan secara muluik ka muluik dan menulis bukubuku nan manolak amalan tarekat secara berlebihan.anggota dari majelis islam tinggi iko alah banyak tagabuang dalam majelis iskam tinggi,diantaranyo tokoh ulama besar yaitu haji abdul karim amrullah dikenal juo sebagai haji rasul atau inyiak doto, 18791945 yang merupakan antara tokoh lain yang barazaskan sakola islam moden nan partamo sumatera thawalib 1919 yaitu barado di padang panjang basamosamo jo tokoh haji abdullah ahmad 18781933."
-"masjid ini memiliki arsitektur tiongkok dan minangkabau.","masjid iko punyo arsitektur dari cino jo minangkabau."
-"""
-        return pd.read_csv(io.StringIO(csv_data_internal))
+            """Memuat data dari file CSV atau mengembalikan error jika gagal."""
+            if csv_file_path:
+                try:
+                    print(f"Mencoba memuat data dari: {csv_file_path}")
+                    df = pd.read_csv(csv_file_path)
+                    print("Data berhasil dimuat dari file.")
+                    return df
+                except FileNotFoundError:
+                    error_message = f"File '{csv_file_path}' tidak ditemukan."
+                    print(error_message)
+                    raise FileNotFoundError(error_message)
+                except Exception as e:
+                    error_message = f"Error saat memuat file CSV '{csv_file_path}': {e}"
+                    print(error_message)
+                    raise Exception(error_message)
+            else:
+                error_message = "Path ke file CSV tidak diberikan dan data internal tidak tersedia."
+                print(error_message)
+                raise ValueError(error_message)
 
     def _preprocess_text(self, text):
         """Membersihkan teks: lowercase dan hapus tanda baca."""
@@ -151,78 +151,39 @@ class SemanticRetriever:
                     }
         return results
 
-class PromptGenerator:
-    """
-    Kelas untuk menghasilkan prompt yang akan diproses oleh LLM.
-    """
-    @staticmethod
-    def for_sentence_translation_elaboration(query_word, found_word, similarity, indonesian_sentence, minangkabau_sentence):
-        """
-        Membuat prompt untuk meminta elaborasi atau verifikasi terjemahan kalimat.
-        """
-        prompt = f"""Analisis Pasangan Kalimat Indonesia-Minang berikut:
-
-Kata Kunci dari Query Pengguna: "{query_word}"
-Kata Terkait yang Ditemukan di Basis Data: "{found_word}" (Skor Kemiripan: {similarity:.2f})
-
-Kalimat Bahasa Indonesia:
-"{indonesian_sentence}"
-
-Kalimat Bahasa Minang (Terjemahan yang Ditemukan):
-"{minangkabau_sentence}"
-
-Tugas Anda:
-1.  Evaluasi keakuratan dan kenaturalan terjemahan dari Bahasa Indonesia ke Bahasa Minang tersebut.
-2.  Jika ada, berikan alternatif terjemahan yang mungkin lebih baik atau lebih umum digunakan dalam konteks Bahasa Minang.
-3.  Berikan sedikit penjelasan mengenai konteks penggunaan kalimat Minang tersebut atau nuansa makna yang mungkin ada.
-4.  Jika kata kunci query ("{query_word}") dan kata yang ditemukan ("{found_word}") berbeda, jelaskan mengapa sistem mungkin menganggapnya mirip secara semantik.
-
-Mohon berikan jawaban yang jelas dan informatif.
-"""
-        return prompt
-
-    @staticmethod
-    def for_query_summary_and_answer(original_query, retrieved_data_list):
-        """
-        Membuat prompt untuk merangkum temuan atau menjawab query berdasarkan data yang diambil.
-        """
+def for_query_summary_and_answer(original_query, retrieved_data_list):
         if not retrieved_data_list:
-            return f"Tidak ada informasi relevan yang ditemukan untuk query: \"{original_query}\". Mohon coba query lain atau periksa basis data."
+            return f"No relevant information was found for the query: \"{original_query}\". Please try another query or check the database."
 
-        context_str = "Informasi yang berhasil diambil dari basis data:\n\n"
+        context_str = "Here is the information related to Indonesian words with example sentences in Indonesian-Minangkabau:\n\n"
         for item in retrieved_data_list:
-            context_str += f"- Untuk kata kunci query \"{item['original_query_word']}\":\n"
-            context_str += f"  - Ditemukan kata mirip di korpus: \"{item['found_word_in_corpus']}\" (Skor: {item['similarity_score']:.2f})\n"
-            context_str += f"  - Contoh Kalimat Indonesia: \"{item['retrieved_example']['indonesian']}\"\n"
-            context_str += f"  - Contoh Kalimat Minang: \"{item['retrieved_example']['minangkabau']}\"\n\n"
+            context_str += f"- For the word \"{item['original_query_word']}\":\n"
+            # context_str += f"  - Similar word found in the corpus: \"{item['found_word_in_corpus']}\" (Score: {item['similarity_score']:.2f})\n"
+            context_str += f"  - Example Sentence in Indonesian: \"{item['retrieved_example']['indonesian']}\"\n"
+            context_str += f"  - Example Sentence in Minangkabau: \"{item['retrieved_example']['minangkabau']}\"\n\n"
 
-        prompt = f"""Query Pengguna:
-"{original_query}"
-
-Konteks yang Ditemukan:
+        prompt = f"""
 {context_str}
-Tugas Anda:
-1.  Berdasarkan konteks di atas, berikan jawaban atau penjelasan yang relevan terhadap query pengguna ("{original_query}").
-2.  Jika memungkinkan, rangkum informasi penting dari contoh-contoh kalimat yang ditemukan.
-3.  Jika ada ambiguitas atau informasi yang kurang, sebutkan.
-
-Mohon berikan jawaban yang komprehensif dan langsung menjawab pertanyaan pengguna.
+Your Task:
+1. Note that the given words are in Indonesian.
+2. Each word has an example sentence in Indonesian and its translation in Minangkabau.
+3. Translate the following Indonesian sentence: "{original_query}" into Minangkabau.
+Provide the answer directly as the translated sentence:
 """
         return prompt
-
+    
 # --- Blok Utama untuk Pengujian ---
 if __name__ == "__main__":
     # Inisialisasi Retriever
     # Ganti dengan path ke file CSV Anda jika ada, atau biarkan None untuk menggunakan data internal.
-    # Contoh: retriever = SemanticRetriever(csv_file_path="dataset/train.csv")
-    retriever = SemanticRetriever(csv_file_path=None) 
+    retriever = SemanticRetriever(csv_file_path="dataset/train.csv")
 
     if retriever.model and (retriever.vocab_list or retriever.corpus_embeddings.size > 0) :
         # Contoh Query
         # Query ini menggunakan kata "bangunan ibadah", yang tidak ada di teks asli.
         # Teks asli mengandung kata "masjid" dan "makam".
         # query_pengguna = "arsitektur bangunan ibadah tiongkok"
-        query_pengguna = "siapa syekh sihalahan"
+        query_pengguna = "skki juga memiliki program gelar ganda ambisius dengan sejumlah universitas ternama di dunia"
         
         print(f"\nMelakukan pencarian untuk query: \"{query_pengguna}\"")
         hasil_pencarian = retriever.retrieve(query_pengguna, similarity_threshold=0.4)
@@ -235,35 +196,14 @@ if __name__ == "__main__":
             list_data_untuk_prompt_summary = []
 
             for kata_query, data_hasil in hasil_pencarian.items():
-                print(f"\nKata Kunci dari Query: '{kata_query}'")
-                print(f"  -> Ditemukan kata paling mirip di korpus: '{data_hasil['found_word_in_corpus']}' (Skor Kemiripan: {data_hasil['similarity_score']:.2f})")
-                
-                contoh = data_hasil['retrieved_example']
-                print("  -> Contoh Kalimat Terpilih:")
-                print(f"    - Indo  : {contoh['indonesian']}")
-                print(f"    - Minang: {contoh['minangkabau']}")
-                
-                # Menyiapkan data untuk prompt summary
                 list_data_untuk_prompt_summary.append({
                     "original_query_word": kata_query,
                     **data_hasil # Menyalin semua key dari data_hasil
                 })
 
-                # Membuat dan menampilkan prompt untuk elaborasi kalimat
-                prompt_elaborasi = PromptGenerator.for_sentence_translation_elaboration(
-                    kata_query,
-                    data_hasil['found_word_in_corpus'],
-                    data_hasil['similarity_score'],
-                    contoh['indonesian'],
-                    contoh['minangkabau']
-                )
-                print("\n  --- Prompt untuk LLM (Elaborasi Kalimat) ---")
-                print(prompt_elaborasi)
-                print("-" * 50)
-
             # Membuat dan menampilkan prompt untuk summary keseluruhan query
             if list_data_untuk_prompt_summary:
-                prompt_summary_keseluruhan = PromptGenerator.for_query_summary_and_answer(
+                prompt_summary_keseluruhan = for_query_summary_and_answer(
                     query_pengguna,
                     list_data_untuk_prompt_summary
                 )
