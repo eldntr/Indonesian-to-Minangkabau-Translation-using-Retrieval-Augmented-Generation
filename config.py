@@ -6,3 +6,7 @@ CSV_FILE_PATH = "dataset/train.csv"
 
 # Ambang batas skor similaritas kosinus untuk pencarian
 SIMILARITY_THRESHOLD = 0.4
+
+# Konfigurasi untuk LLM
+LLM_MODEL = "meta-llama/llama-3.3-8b-instruct:free"
+OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"

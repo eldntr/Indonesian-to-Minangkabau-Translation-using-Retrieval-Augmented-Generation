@@ -2,3 +2,6 @@ pandas
 numpy
 sentence-transformers
 scikit-learn
+python-dotenv
+rouge-score
+sacrebleu
