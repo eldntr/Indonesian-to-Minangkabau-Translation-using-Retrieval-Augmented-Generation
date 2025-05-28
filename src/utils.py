@@ -25,6 +25,6 @@ Your Task:
 2. Each word has an example sentence in Indonesian and its translation in Minangkabau.
 3. Translate the following Indonesian sentence: "{original_query}" into Minangkabau.
 
-Provide the answer directly as the translated sentence:
+Provide only the translated sentence as the output, without any additional text or formatting:
 """
     return prompt

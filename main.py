@@ -1,9 +1,7 @@
-# main.py
-
 from src.retriever import SemanticRetriever
 from src.utils import generate_translation_prompt
 from src.llm_handler import send_prompt_to_llm
-from src.evaluation_metrics import calculate_bleu, calculate_rouge, calculate_chrf
+from src.evaluation_metrics import calculate_bleu, calculate_ter, calculate_chrf, calculate_meteor
 import config
 from dotenv import load_dotenv
 import os
@@ -67,22 +65,25 @@ def main():
         print("\n--- Jawaban dari LLM ---")
         print(response)
 
-        # 7. Evaluasi berbagai metrik
         if response:
-            # BLEU Score
+            print("\n--- Skor Evaluasi Otomatis ---")
+            
+            # BLEU Score (Semakin tinggi semakin baik)
             bleu_score = calculate_bleu(kunci_jawaban, response)
-            print(f"\n--- BLEU Score ---\n{bleu_score}")
+            print(f"1. BLEU Score  : {bleu_score:.4f} (Fokus pada presisi frasa)")
 
-            # ROUGE Scores
-            rouge_scores = calculate_rouge(kunci_jawaban, response)
-            print(f"\n--- ROUGE Scores ---")
-            print(f"ROUGE-1: {rouge_scores['rouge-1']}")
-            print(f"ROUGE-2: {rouge_scores['rouge-2']}")
-            print(f"ROUGE-L: {rouge_scores['rouge-l']}")
+            # METEOR Score (Semakin tinggi semakin baik)
+            meteor_score = calculate_meteor(kunci_jawaban, response)
+            print(f"2. METEOR Score: {meteor_score:.4f} (Memahami sinonim & urutan kata)")
 
-            # ChrF Score
+            # TER Score (Semakin RENDAH semakin baik)
+            ter_score = calculate_ter(kunci_jawaban, response)
+            print(f"3. TER Score    : {ter_score:.4f} (Jumlah editan yang diperlukan, lebih rendah lebih baik)")
+            
+            # ChrF Score (Semakin tinggi semakin baik)
             chrf_score = calculate_chrf(kunci_jawaban, response)
-            print(f"\n--- ChrF Score ---\n{chrf_score}")
+            print(f"4. ChrF Score   : {chrf_score:.4f} (Fokus pada kesamaan level karakter)")
+
 
 if __name__ == "__main__":
     main()

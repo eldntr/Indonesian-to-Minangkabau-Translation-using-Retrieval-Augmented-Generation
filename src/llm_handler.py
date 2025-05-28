@@ -24,7 +24,7 @@ def send_prompt_to_llm(prompt_final):
     }
 
     curl_command = [
-        "curl", "https://openrouter.ai/api/v1/chat/completions",
+        "curl", "-s", "https://openrouter.ai/api/v1/chat/completions",  # Tambahkan `-s` untuk menyembunyikan log
         "-H", "Content-Type: application/json",
         "-H", f"Authorization: Bearer {api_key}",
         "-d", json.dumps(payload)  # Gunakan json.dumps untuk memastikan JSON valid
