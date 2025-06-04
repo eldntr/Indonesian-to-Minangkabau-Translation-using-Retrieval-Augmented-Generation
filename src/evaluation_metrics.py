@@ -12,6 +12,7 @@ import pyter
 # >>> nltk.download('wordnet')
 # >>> nltk.download('omw-1.4')
 
+
 def calculate_bleu(reference, candidate):
     """
     Menghitung BLEU score antara referensi dan kandidat.
@@ -22,6 +23,7 @@ def calculate_bleu(reference, candidate):
     smoothing_function = SmoothingFunction().method1
     return sentence_bleu(reference_tokens, candidate_tokens, smoothing_function=smoothing_function)
 
+
 def calculate_meteor(reference, candidate):
     """
     Menghitung METEOR score antara referensi dan kandidat.
@@ -31,6 +33,7 @@ def calculate_meteor(reference, candidate):
     reference_tokens = word_tokenize(reference)
     candidate_tokens = word_tokenize(candidate)
     return single_meteor_score(reference_tokens, candidate_tokens)
+
 
 def calculate_ter(reference, candidate):
     """
