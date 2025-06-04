@@ -8,5 +8,5 @@ CSV_FILE_PATH = "dataset/train.csv"
 SIMILARITY_THRESHOLD = 0.4
 
 # Konfigurasi untuk LLM
-LLM_MODEL = "meta-llama/llama-3.1-8b-instruct"
+LLM_MODEL = "deepseek/deepseek-chat"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
