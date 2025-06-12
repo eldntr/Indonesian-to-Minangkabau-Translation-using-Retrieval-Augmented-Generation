@@ -14,7 +14,7 @@ import config
 
 # --- KONFIGURASI ---
 # Path ke dataset pengujian. Pastikan file ini ada dan memiliki kolom 'indonesia' dan 'minang'.
-TEST_DATA_PATH = 'dataset/test.csv'
+TEST_DATA_PATH = 'datasetv2/test.csv'
 
 # Path untuk file output
 OUTPUT_DIR = 'results'
