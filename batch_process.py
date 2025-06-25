@@ -24,7 +24,7 @@ EVALUATION_SUMMARY_PATH = os.path.join(OUTPUT_DIR, 'total_evaluation.txt')
 # Pengaturan untuk penanganan API
 MAX_RETRIES = 3  # Jumlah maksimum percobaan ulang jika API gagal
 RETRY_DELAY_SECONDS = 5  # Waktu tunggu (detik) sebelum mencoba lagi
-REQUEST_DELAY_SECONDS = 1  # Jeda antar permintaan untuk menghindari rate limiting
+REQUEST_DELAY_SECONDS = 0.1  # Jeda antar permintaan untuk menghindari rate limiting
 
 def process_and_evaluate_corpus():
     """

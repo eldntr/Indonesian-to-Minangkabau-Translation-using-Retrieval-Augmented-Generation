@@ -1,8 +1,8 @@
 --- Rangkuman Total Evaluasi ---
 
-Jumlah data yang dievaluasi: 2441
+Jumlah data yang dievaluasi: 5128
 
-Rata-rata BLEU Score     : 0.3728 (Semakin tinggi semakin baik)
-Rata-rata METEOR Score   : 0.6918 (Semakin tinggi semakin baik)
-Rata-rata TER Score      : 0.5763 (Semakin RENDAH semakin baik)
-Rata-rata ChrF Score     : 74.2843 (Semakin tinggi semakin baik)
+Rata-rata BLEU Score     : 0.5456 (Semakin tinggi semakin baik)
+Rata-rata METEOR Score   : 0.7863 (Semakin tinggi semakin baik)
+Rata-rata TER Score      : 0.2544 (Semakin RENDAH semakin baik)
+Rata-rata ChrF Score     : 83.1672 (Semakin tinggi semakin baik)

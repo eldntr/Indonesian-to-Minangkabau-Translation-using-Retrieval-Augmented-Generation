@@ -8,5 +8,5 @@ CSV_FILE_PATH = "datasetv2/train.csv"
 SIMILARITY_THRESHOLD = 0.4
 
 # Konfigurasi untuk LLM
-LLM_MODEL = "meta-llama/llama-3.1-8b-instruct"
+LLM_MODEL = "google/gemini-2.0-flash-001"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
